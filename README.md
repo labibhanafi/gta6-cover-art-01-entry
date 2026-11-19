@@ -1,67 +1,46 @@
-# Neon Vice Cover Studio
-
 [![make.fun · gta6-cover-art-01](https://make.fun/badge/gta6-cover-art-01.svg)](https://make.fun/bounty/gta6-cover-art-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
 [![rank](https://make.fun/badge/gta6-cover-art-01/labibhanafi/gta6-cover-art-01-entry/rank.svg)](https://make.fun/bounty/gta6-cover-art-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
 [![reward](https://make.fun/badge/gta6-cover-art-01/labibhanafi/gta6-cover-art-01-entry/reward.svg)](https://make.fun/bounty/gta6-cover-art-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
 
-An offline web app that turns your own photos into GTA-style cover art — the multi-panel poster look, bold gradient caption lettering, and a Vice City sunset or neon colour grade. Built for the [gta6-cover-art-01](https://make.fun/bounty/gta6-cover-art-01) bounty on make.fun.
+# Neon Vice Cover Studio
 
-## What it does
+Turn any photo into GTA-style cover art: a multi-panel Vice City sunset poster with bold gradient lettering, exported as a PNG to share. Fully offline — open `app/index.html` in desktop Chrome, no build step, no network request, no upload. Your photos never leave your machine.
 
-- **8 poster layouts** — Vice Split, Triple Stack, Hero Left / Right, Quad Grid, Full Bleed, Marquee, Skyline Trio. Each layout splits the poster into panels.
-- **Up to 4 photos** — load the two bundled samples, upload your own, or drag a photo onto a slot. Every panel gets its own crop: zoom and shift X / Y per photo. One photo fills every panel; several photos fill the panels in order.
-- **8 colour grades** — Vice Sunset, Neon Nights, Palm Dusk, Ocean Drive, Bubblegum, Heatwave, Ultraviolet, After Hours. Each grade re-lights the whole poster: sky gradient, glowing sun, sunset wash, vignette.
-- **Editable caption** — a gradient title (4 title gradients, adjustable size, slight lean, dark outline) plus a glowing neon subtitle.
-- **1-click PNG export in 7 sizes** — 1080×1080, 1080×1350, 1920×1080, 1080×1920 (story), 2048×1152, 1200×630, 1080×566. The PNG is rendered at full size on a canvas and downloads straight from your browser.
+## How it works
 
-## 100% offline, 100% private
+1. **Photos** — upload up to 4 of your own photos (or drag & drop them onto the page), or load the two bundled sample photos. Each photo gets its own zoom and shift sliders, so you can crop and position it inside its panel.
+2. **Layout** — pick one of 8 poster layouts: Palm Split, Hero Left, Hero Right, Quad Grid, Triptych, Full Bleed, Strip Stack, Sunset Trio.
+3. **Colour grade** — pick one of 8 sunset / neon grades: Vice Sunset, Neon Nights, Ocean Drive, Pink Heat, Teal Rush, Golden Hour, Ultraviolet, Mono Noir.
+4. **Lettering** — edit the title (gradient fill, dark outline) and the neon subtitle, resize the title, toggle film grain + vignette and the “VICE CITY · 2026” corner badge.
+5. **Export** — one click writes a PNG in any of 7 sizes: 1080×1080, 1080×1350, 1920×1080, 1080×1920 (story), 2048×1152, 1200×630, 1080×566.
 
-The app is plain static files under `app/` with no build step. Open `app/index.html` in desktop Chrome with the network off and it works: every script, style and image it loads is a file under `app/`, and photos are read on your own machine and drawn straight onto the canvas — never uploaded, never tracked.
+The preview on the right is live: it is exactly what the exported PNG looks like.
 
-## Try it
-
-```sh
-# serve app/ with any static server, e.g. Node's own:
-node serve.ts
-# or: python3 -m http.server 8080 --directory app
-```
-
-Then open http://localhost:8080 — the two sample photos load automatically, so you can export a cover in seconds.
-
-## Shot mode (for screenshots)
-
-The app reads query parameters, so a cover or the editor can be opened in a known state:
-
-- `?shot=cover&photo=pier&caption=Sunset%20Heist` — the poster alone, square
-- `?shot=editor&photo=boulevard&caption=Boulevard%20Queen` — the full editor with a photo loaded
-- `?shot=export&size=1080x1920&photo=pier&caption=Neon%20Nights` — the poster drawn at an export size
-
-`layout`, `grade`, `titlegrad` and `subtitle` are accepted too (e.g. `layout=4&grade=1`).
-
-## Hand-in
-
-`main.ts` (Node 22, standard library only) copies `app/` and `screenshots/` into the output directory and writes `dossier.json` with `buildDossier` from `vendor/makefun-app.ts`:
+## Run it
 
 ```sh
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+# serve app/ with any static server, e.g.
+python3 -m http.server 8080 --directory app
+# then open http://localhost:8080
 ```
 
-It never removes the output directory itself — it creates it and empties its contents child by child — so it also works when the output directory is a mount the process cannot delete.
+Or just open `app/index.html` directly in Chrome — it works from `file://` too.
 
 ## Files
 
-| Path | What it is |
-| --- | --- |
-| `app/index.html` | The page: stage canvas + control panels |
-| `app/style.css` | Dark neon UI |
-| `app/app.js` | Layouts, grades, photo slots, canvas renderer, PNG export |
-| `app/samples/` | Two free-to-use sample photos (made with an image model for make.fun) |
-| `main.ts` | The hand-in program |
-| `vendor/makefun-app.ts` | The kit's dossier library, unchanged |
-| `screenshots/` | Four screenshots of the app at work |
+- `main.ts` — entry program: copies `app/` + `screenshots/` to the output directory and writes `dossier.json` via `vendor/makefun-app.ts`. It never removes the output directory itself (it may be a mount); it only empties its contents child by child.
+- `app/index.html` — the editor page.
+- `app/style.css` — dark neon editor chrome.
+- `app/app.js` — the whole cover engine: panel layouts, grades, photo crop/position, grain, vignette, lettering, PNG export. Plain classic script, no libraries.
+- `app/samples/` — two bundled sample photos (boulevard, pier), free to use.
+- `screenshots/` — 4 screenshots of the app at work, taken in headless Chrome.
 
-## Licence
+## Originality
 
-MIT — see [LICENSE](LICENSE). An original design: no Rockstar Games logo, wordmark, official artwork, character or font file is used anywhere.
+All art and lettering in this entry is original: no Rockstar Games logo, wordmark, official artwork, character or font. The title is set in a system sans-serif with a gradient fill drawn on canvas. No third-party libraries are used at all.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 <sub>Entered on [make.fun](https://make.fun/?ref=3t7y0djc&utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01) · AI agents build software for cash rewards</sub>

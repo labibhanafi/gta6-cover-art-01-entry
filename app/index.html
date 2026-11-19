@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Vice Cover Studio — GTA-style cover art maker</title>
+<title>Neon Vice Cover Studio — GTA-style cover maker</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,80 +11,65 @@
   <div class="brand">
     <span class="brand-mark">NV</span>
     <div>
-      <h1>Neon Vice <span>Cover Studio</span></h1>
-      <p>Turn your photos into sunset-neon cover art. 100% offline — photos never leave this machine.</p>
+      <h1>Neon Vice Cover Studio</h1>
+      <p>Turn any photo into a Vice City sunset cover. 100% offline — your photos never leave this machine.</p>
     </div>
   </div>
   <div class="top-actions">
-    <span class="pill" id="offline-pill">OFFLINE · NO UPLOAD</span>
-    <button id="reset-all" type="button" class="btn ghost">Reset</button>
+    <button id="shuffleBtn" type="button" title="Random layout + grade">Shuffle look</button>
+    <button id="exportBtn" type="button" class="primary">Export PNG</button>
   </div>
 </header>
 
-<main class="workspace">
-  <section class="stage-col">
-    <div class="stage-wrap" id="stage-wrap">
-      <canvas id="poster" width="1080" height="1080" aria-label="Cover preview"></canvas>
-      <div class="stage-caption" id="stage-caption">1080 × 1080 · Square</div>
+<main class="studio">
+  <section class="controls" aria-label="Cover controls">
+    <h2>1 · Photos</h2>
+    <p class="hint">Load up to 4 photos. Each panel of the cover uses one slot — drag the sliders to crop and position each photo inside its panel.</p>
+    <div id="photoSlots" class="slots"></div>
+    <div class="sample-row">
+      <span>Try a sample:</span>
+      <button type="button" data-sample="boulevard">Boulevard</button>
+      <button type="button" data-sample="pier">Pier</button>
+      <button type="button" id="loadAllSamples">Load both</button>
     </div>
-    <div class="stage-toolbar">
-      <button id="load-pier" type="button" class="btn">Load sample: Pier</button>
-      <button id="load-boulevard" type="button" class="btn">Load sample: Boulevard</button>
-      <button id="load-both" type="button" class="btn accent">Load both samples</button>
-      <span class="hint">or drop a photo onto a slot →</span>
-    </div>
-    <p class="fineprint">Photos are read on your own machine and drawn straight onto the canvas. Nothing is uploaded, nothing is tracked, no network request is made.</p>
+
+    <h2>2 · Layout</h2>
+    <div id="layoutGrid" class="pick-grid" role="group" aria-label="Poster layout"></div>
+
+    <h2>3 · Colour grade</h2>
+    <div id="gradeGrid" class="pick-grid" role="group" aria-label="Colour grade"></div>
+
+    <h2>4 · Lettering</h2>
+    <label class="field">Title
+      <input id="titleInput" type="text" value="SUNSET HEIST" maxlength="24" autocomplete="off">
+    </label>
+    <label class="field">Subtitle
+      <input id="subtitleInput" type="text" value="one last ride down Ocean Drive" maxlength="60" autocomplete="off">
+    </label>
+    <label class="field">Title size
+      <input id="titleSize" type="range" min="60" max="150" value="104">
+    </label>
+    <label class="check"><input id="grainToggle" type="checkbox" checked> Film grain + vignette</label>
+    <label class="check"><input id="badgeToggle" type="checkbox" checked> “VICE CITY · 2026” corner badge</label>
+
+    <h2>5 · Export size</h2>
+    <div id="sizeGrid" class="pick-grid" role="group" aria-label="Export size"></div>
+    <p class="hint">One click writes a PNG at the size above — square, portrait, story or wide.</p>
+    <button id="exportBtn2" type="button" class="primary wide">Export PNG</button>
+    <p id="statusLine" class="status" aria-live="polite">Ready. Load a photo to begin.</p>
   </section>
 
-  <aside class="panel-col" id="panel-col">
-    <section class="card">
-      <h2>1 · Photos <span class="count" id="photo-count">0 / 4</span></h2>
-      <p class="card-note">Up to four photos. One photo can fill every panel; several photos fill the panels in order.</p>
-      <div id="slots" class="slots"></div>
-    </section>
-
-    <section class="card">
-      <h2>2 · Layout</h2>
-      <div id="layouts" class="layout-grid" role="radiogroup" aria-label="Poster layout"></div>
-    </section>
-
-    <section class="card">
-      <h2>3 · Colour grade</h2>
-      <div id="grades" class="grade-grid" role="radiogroup" aria-label="Colour grade"></div>
-    </section>
-
-    <section class="card">
-      <h2>4 · Caption</h2>
-      <label class="field">
-        <span>Title</span>
-        <input id="title-input" type="text" value="Sunset Heist" maxlength="24" autocomplete="off">
-      </label>
-      <label class="field">
-        <span>Subtitle</span>
-        <input id="subtitle-input" type="text" value="VICE CITY · SUMMER 2026" maxlength="48" autocomplete="off">
-      </label>
-      <div class="field">
-        <span>Title gradient</span>
-        <div id="title-gradients" class="swatch-row" role="radiogroup" aria-label="Title gradient"></div>
-      </div>
-      <label class="field range">
-        <span>Title size <b id="title-size-val">100%</b></span>
-        <input id="title-size" type="range" min="60" max="140" value="100">
-      </label>
-    </section>
-
-    <section class="card export-card">
-      <h2>5 · Export PNG</h2>
-      <div id="sizes" class="size-grid" role="radiogroup" aria-label="Export size"></div>
-      <button id="export-btn" type="button" class="btn big accent">Export PNG — 1 click</button>
-      <p class="status" id="export-status">Ready. The PNG downloads straight from your browser.</p>
-      <a id="download-link" hidden></a>
-    </section>
-  </aside>
+  <section class="preview" aria-label="Live cover preview">
+    <div class="canvas-wrap">
+      <canvas id="coverCanvas" width="1080" height="1080"></canvas>
+    </div>
+    <p class="preview-note">Live preview — exactly what the PNG will look like.</p>
+  </section>
 </main>
 
 <footer class="foot">
-  <span>Neon Vice Cover Studio — an original fan-style cover maker. Not affiliated with Rockstar Games. No logos, artwork or fonts from any game are used.</span>
+  <span>Neon Vice Cover Studio · offline cover maker · no upload, no account, no watermark</span>
+  <span>Original art &amp; lettering — not affiliated with any game studio.</span>
 </footer>
 
 <script src="app.js"></script>
