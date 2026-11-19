@@ -2,7 +2,7 @@
 // Copies app/ and screenshots/ into the output directory and writes
 // dossier.json with the kit's buildDossier. Deterministic: the same
 // inputs always produce byte-identical outputs, run after run.
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildDossier } from "./vendor/makefun-app.ts";
@@ -10,8 +10,15 @@ import { buildDossier } from "./vendor/makefun-app.ts";
 const repoRoot = dirname(fileURLToPath(import.meta.url));
 const outDir = process.env.MAKEFUN_OUTPUT_DIR || "/output";
 
-rmSync(outDir, { recursive: true, force: true });
+// Never delete the output directory itself: in the grader it is a
+// mounted volume, so removing it fails with EPERM and kills the run.
+// Instead create it if needed and clear only its contents, one child
+// at a time, leaving the directory itself in place. This keeps the
+// run safe on a mounted /output volume (uid 65534, read-only bot dir).
 mkdirSync(outDir, { recursive: true });
+for (const child of readdirSync(outDir)) {
+  rmSync(join(outDir, child), { recursive: true, force: true });
+}
 
 for (const name of ["app", "screenshots"]) {
   const src = join(repoRoot, name);
